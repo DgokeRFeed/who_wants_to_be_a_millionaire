@@ -1,7 +1,7 @@
 # (c) goodprogrammer.ru
 
-require 'rails_helper'
-require 'support/my_spec_helper' # наш собственный класс с вспомогательными методами
+require "rails_helper"
+require "support/my_spec_helper" # наш собственный класс с вспомогательными методами
 
 # Тестовый сценарий для модели Игры
 # В идеале - все методы должны быть покрыты тестами,
@@ -14,8 +14,8 @@ RSpec.describe Game, type: :model do
   let(:game_w_questions) { FactoryBot.create(:game_with_questions, user: user) }
 
   # Группа тестов на работу фабрики создания новых игр
-  context 'Game Factory' do
-    it 'Game.create_game! new correct game' do
+  context "Game Factory" do
+    it "Game.create_game! new correct game" do
       # генерим 60 вопросов с 4х запасом по полю level,
       # чтобы проверить работу RANDOM при создании игры
       generate_questions(60)
@@ -40,10 +40,9 @@ RSpec.describe Game, type: :model do
 
 
   # тесты на основную игровую логику
-  context 'game mechanics' do
-
+  context "game mechanics" do
     # правильный ответ должен продолжать игру
-    it 'answer correct continues game' do
+    it "answer correct continues game" do
       # текущий уровень игры и статус
       level = game_w_questions.current_level
       q = game_w_questions.current_game_question
@@ -59,6 +58,20 @@ RSpec.describe Game, type: :model do
       # игра продолжается
       expect(game_w_questions.status).to eq(:in_progress)
       expect(game_w_questions.finished?).to be_falsey
+    end
+    
+    it ".take_money! finished game" do
+      q = game_w_questions.current_game_question
+      game_w_questions.answer_current_question!(q.correct_answer_key)
+
+      game_w_questions.take_money!
+
+      prize = game_w_questions.prize
+      expect(prize).to be > 0
+
+      expect(game_w_questions.status).to eq(:money)
+      expect(game_w_questions.user.balance).to eq(prize)
+      expect(game_w_questions.finished?).to be_truthy
     end
   end
 end
