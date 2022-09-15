@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe 'games/help', type: :view do
   # Перед началом теста подготовим объекты
   # build_stubbed не создает объекта в базе, будьте аккуратны
-  let(:game) { FactoryGirl.build_stubbed(:game) }
+  let(:game) { FactoryBot.build_stubbed(:game) }
   let(:help_hash) { {friend_call: 'Сережа считает, что это вариант D'} }
 
   # Проверяем, что выводятся кнопки подсказок

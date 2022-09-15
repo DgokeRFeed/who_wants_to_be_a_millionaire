@@ -3,16 +3,16 @@
 # см. другие примеры на
 # http://www.rubydoc.info/gems/factory_girl/file/GETTING_STARTED.md
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :game do
     # связь с юзером
     association :user
 
     #  игра только начата
-    finished_at nil
-    current_level 0
-    is_failed false
-    prize 0
+    finished_at { nil }
+    current_level { 0 }
+    is_failed { false }
+    prize { 0 }
     # ! эта фабрика создает объект Game без дочерних игровых вопросов,
     # в такую игру играть нельзя, расширим фабрику дочерней фабрикой!
 
