@@ -21,7 +21,7 @@ FactoryBot.define do
       # коллбэк после :build игры - создаем 15 вопросов
       after(:build) { |game|
         15.times do |i|
-          # factory_girl create - дергает соотв. фабрику
+          # factory_bot create - дергает соотв. фабрику
           # создаем явно вопрос с нужным уровнем
           q = create(:question, level: i)
           # создаем связанные game_questions с нужной игрой и вопросом

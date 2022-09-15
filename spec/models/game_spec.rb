@@ -74,4 +74,30 @@ RSpec.describe Game, type: :model do
       expect(game_w_questions.finished?).to be_truthy
     end
   end
+  context "correct .status" do
+    before(:each) do
+      game_w_questions.finished_at = Time.now
+      expect(game_w_questions.finished?).to be_truthy
+    end
+
+    it ":fail" do
+      game_w_questions.is_failed = true
+      expect(game_w_questions.status).to eq(:fail)
+    end
+
+    it ":timeout" do
+      game_w_questions.is_failed = true
+      game_w_questions.created_at = 1.hours.ago
+      expect(game_w_questions.status).to eq(:timeout)
+    end
+
+    it ":won" do
+      game_w_questions.current_level = Question::QUESTION_LEVELS.max + 1
+      expect(game_w_questions.status).to eq(:won)
+    end
+
+    it ":money" do
+      expect(game_w_questions.status).to eq(:money)
+    end
+  end
 end
