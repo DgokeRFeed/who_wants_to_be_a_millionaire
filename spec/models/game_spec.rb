@@ -83,6 +83,38 @@ RSpec.describe Game, type: :model do
     end
   end
 
+  context "correct .answer_current_question!" do
+    context "answer is correct" do
+      it "return true" do
+        q = game_w_questions.current_game_question
+        expect(game_w_questions.answer_current_question!(q.correct_answer_key)).to be_truthy
+        expect(game_w_questions.status).to eq(:in_progress)
+      end
+
+      it "return true on last question" do
+        game_w_questions.current_level = Question::QUESTION_LEVELS.max
+        q = game_w_questions.current_game_question
+        expect(game_w_questions.answer_current_question!(q.correct_answer_key)).to be_truthy
+        expect(game_w_questions.status).to eq(:won)
+      end
+
+      it "return false when games time out" do
+        game_w_questions.created_at = 1.hours.ago
+        q = game_w_questions.current_game_question
+        expect(game_w_questions.answer_current_question!(q.correct_answer_key)).to be_falsey
+        expect(game_w_questions.status).to eq(:timeout)
+      end
+    end
+
+    context "answer is not correct" do
+      it "return false" do
+        q = game_w_questions.current_game_question
+        expect(game_w_questions.answer_current_question!((%w(a b c d) - [q.correct_answer_key]).sample)).to be_falsey
+        expect(game_w_questions.status).to eq(:fail)
+      end
+    end
+  end
+
   context "correct .status" do
     before(:each) do
       game_w_questions.finished_at = Time.now
