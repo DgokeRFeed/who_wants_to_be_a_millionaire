@@ -29,6 +29,10 @@ RSpec.describe GameQuestion, type: :model do
       expect(game_question.text).to eq(game_question.question.text)
       expect(game_question.level).to eq(game_question.question.level)
     end
+
+    it "correct .correct_answer_key" do
+      expect(game_question.correct_answer_key).to eq("b")
+    end
   end
 
   # help_hash у нас имеет такой формат:
