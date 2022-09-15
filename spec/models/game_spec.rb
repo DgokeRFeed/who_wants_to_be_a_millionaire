@@ -83,33 +83,55 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  context "correct .answer_current_question!" do
-    context "answer is correct" do
-      it "return true" do
-        q = game_w_questions.current_game_question
-        expect(game_w_questions.answer_current_question!(q.correct_answer_key)).to be_truthy
-        expect(game_w_questions.status).to eq(:in_progress)
+  describe "#answer_current_question!" do
+    before { game_w_questions.answer_current_question!(answer_key) }
+
+    context "when answer is correct" do
+      let!(:answer_key) { game_w_questions.current_game_question.correct_answer_key }
+
+      context "and question is last" do
+        let!(:level) { Question::QUESTION_LEVELS.max }
+        let!(:game_w_questions) { FactoryBot.create(:game_with_questions, current_level: level) }
+
+        it "assigns final prize" do
+          expect(game_w_questions.prize).to eq(Game::PRIZES.max)
+        end
+
+        it "finishes game with status won" do
+          expect(game_w_questions.status).to eq(:won)
+        end
       end
 
-      it "return true on last question" do
-        game_w_questions.current_level = Question::QUESTION_LEVELS.max
-        q = game_w_questions.current_game_question
-        expect(game_w_questions.answer_current_question!(q.correct_answer_key)).to be_truthy
-        expect(game_w_questions.status).to eq(:won)
+      context "and question is not last" do
+        let!(:level) { rand(0..Question::QUESTION_LEVELS.max - 1) }
+        let!(:game_w_questions) { FactoryBot.create(:game_with_questions, current_level: level) }
+
+        it "moves to next level" do
+          expect(game_w_questions.current_level).to eq(level + 1)
+        end
+
+        it "continues game" do
+          expect(game_w_questions.status).to eq(:in_progress)
+        end
       end
 
-      it "return false when games time out" do
-        game_w_questions.created_at = 1.hours.ago
-        q = game_w_questions.current_game_question
-        expect(game_w_questions.answer_current_question!(q.correct_answer_key)).to be_falsey
-        expect(game_w_questions.status).to eq(:timeout)
+      context "and time is over" do
+        let!(:game_w_questions) { FactoryBot.create(:game_with_questions, created_at: 1.hours.ago) }
+
+        it "finishes game with status timeout" do
+          expect(game_w_questions.status).to eq(:timeout)
+        end
       end
     end
 
-    context "answer is not correct" do
-      it "return false" do
-        q = game_w_questions.current_game_question
-        expect(game_w_questions.answer_current_question!((%w(a b c d) - [q.correct_answer_key]).sample)).to be_falsey
+    context "when answer is wrong" do
+      let!(:answer_key) { (%w[a b c d] - [game_w_questions.current_game_question.correct_answer_key]).sample }
+
+      it "finishes the game" do
+        expect(game_w_questions.finished?).to be true
+      end
+
+      it "finishes with status fail" do
         expect(game_w_questions.status).to eq(:fail)
       end
     end
