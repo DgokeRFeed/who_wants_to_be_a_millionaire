@@ -74,6 +74,7 @@ RSpec.describe Game, type: :model do
       expect(game_w_questions.finished?).to be_truthy
     end
   end
+
   context "correct .status" do
     before(:each) do
       game_w_questions.finished_at = Time.now

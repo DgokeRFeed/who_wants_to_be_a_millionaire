@@ -16,6 +16,3 @@ FactoryBot.define do
     sequence(:level) { |n| n % 15 }
   end
 end
-
-# PS: неплохой фильмец
-# https://ru.wikipedia.org/wiki/Космическая_одиссея_2001_года

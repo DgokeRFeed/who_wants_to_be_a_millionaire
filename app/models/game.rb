@@ -46,7 +46,7 @@ class Game < ActiveRecord::Base
 
       # созданной игре добавляем ровно 15 новых игровых вопросов, выбирая случайный Question из базы
       Question::QUESTION_LEVELS.each do |i|
-        q = Question.where(level: i).order('RANDOM()').first
+        q = Question.where(level: i).order("RANDOM()").first
         ans = [1, 2, 3, 4]
         game.game_questions.create!(question: q, a: ans.shuffle!.pop, b: ans.shuffle!.pop, c: ans.shuffle!.pop, d: ans.shuffle!.pop)
       end
@@ -96,7 +96,7 @@ class Game < ActiveRecord::Base
   #   в любом случае прописывается :finished_at, :prize (если несгораемый уровень), :updated_at
   # После вызова этого метода обновлится .status игры
   #
-  # letter = 'a','b','c' или 'd'
+  # letter = "a","b","c" или "d"
   def answer_current_question!(letter)
     return false if time_out! || finished? # законченную игру низя обновлять
 

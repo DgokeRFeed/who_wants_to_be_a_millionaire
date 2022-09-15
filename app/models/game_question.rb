@@ -1,7 +1,7 @@
 #  (c) goodprogrammer.ru
 #
 
-require 'game_help_generator'
+require "game_help_generator"
 
 # Игровой вопрос — при создании новой игры формируется массив
 # из 15 игровых вопросов для конкретной игры и игрока.
@@ -29,9 +29,9 @@ class GameQuestion < ActiveRecord::Base
 
   # help_hash у нас имеет такой формат:
   # {
-  #   fifty_fifty: ['a', 'b'], # При использовании подсказски остались варианты a и b
-  #   audience_help: {'a' => 42, 'c' => 37 ...}, # Распределение голосов по вариантам a, b, c, d
-  #   friend_call: 'Василий Петрович считает, что правильный ответ A'
+  #   fifty_fifty: ["a", "b"], # При использовании подсказски остались варианты a и b
+  #   audience_help: {"a" => 42, "c" => 37 ...}, # Распределение голосов по вариантам a, b, c, d
+  #   friend_call: "Василий Петрович считает, что правильный ответ A"
   # }
   #
 
@@ -39,13 +39,13 @@ class GameQuestion < ActiveRecord::Base
   # ----- Основные методы для доступа к данным в шаблонах и контроллерах -----------
 
   # Возвращает хэш, отсортированный по ключам:
-  # {'a' => 'Текст ответа Х', 'b' => 'Текст ответа У', ... }
+  # {"a" => "Текст ответа Х", "b" => "Текст ответа У", ... }
   def variants
     {
-      'a' => question.read_attribute("answer#{a}"),
-      'b' => question.read_attribute("answer#{b}"),
-      'c' => question.read_attribute("answer#{c}"),
-      'd' => question.read_attribute("answer#{d}")
+      "a" => question.read_attribute("answer#{a}"),
+      "b" => question.read_attribute("answer#{b}"),
+      "c" => question.read_attribute("answer#{c}"),
+      "d" => question.read_attribute("answer#{d}")
     }
   end
 
@@ -54,9 +54,9 @@ class GameQuestion < ActiveRecord::Base
     correct_answer_key == letter.to_s.downcase
   end
 
-  # ключ правильного ответа 'a', 'b', 'c', или 'd'
+  # ключ правильного ответа "a", "b", "c", или "d"
   def correct_answer_key
-    {a => 'a', b => 'b', c => 'c', d => 'd'}[1]
+    {a => "a", b => "b", c => "c", d => "d"}[1]
   end
 
   # текст правильного ответа
