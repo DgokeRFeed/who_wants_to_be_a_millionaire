@@ -94,7 +94,7 @@ RSpec.describe GamesController, type: :controller do
   end
 
   describe "#show" do
-    before(:each) do
+    before do
       sign_in user
       get :show, id: alien_game.id
     end
@@ -112,6 +112,39 @@ RSpec.describe GamesController, type: :controller do
 
       it "error message will appear in flash" do
         expect(flash[:alert]).to be
+      end
+    end
+  end
+
+  describe "#take_money" do
+    before do
+      sign_in user
+      game_w_questions.update_attribute(:current_level, 1)
+      put :take_money, id: game_w_questions.id
+      user.reload
+    end
+
+    context "when user takes money" do
+      let!(:game) { assigns(:game) }
+
+      it "finishes game" do
+        expect(game.finished?).to be true
+      end
+
+      it "assigns prize" do
+        expect(game.prize).to eq(100)
+      end
+
+      it "updates user balance" do
+        expect(user.balance).to eq(100)
+      end
+
+      it "redirects to user profile" do
+        expect(response).to redirect_to(user_path(user))
+      end
+
+      it "adds message in flash" do
+        expect(flash[:warning]).to be
       end
     end
   end
