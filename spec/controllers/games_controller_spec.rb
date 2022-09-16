@@ -1,7 +1,7 @@
 # (c) goodprogrammer.ru
 
-require 'rails_helper'
-require 'support/my_spec_helper' # наш собственный класс с вспомогательными методами
+require "rails_helper"
+require "support/my_spec_helper" # наш собственный класс с вспомогательными методами
 
 # Тестовый сценарий для игрового контроллера
 # Самые важные здесь тесты:
@@ -18,9 +18,9 @@ RSpec.describe GamesController, type: :controller do
   let(:game_w_questions) { FactoryBot.create(:game_with_questions, user: user) }
 
   # группа тестов для незалогиненного юзера (Анонимус)
-  context 'Anon' do
+  context "Anon" do
     # из экшена show анона посылаем
-    it 'kick from #show' do
+    it "kick from #show" do
       # вызываем экшен
       get :show, id: game_w_questions.id
       # проверяем ответ
@@ -31,12 +31,12 @@ RSpec.describe GamesController, type: :controller do
   end
 
   # группа тестов на экшены контроллера, доступных залогиненным юзерам
-  context 'Usual user' do
+  context "Usual user" do
     # перед каждым тестом в группе
     before(:each) { sign_in user } # логиним юзера user с помощью спец. Devise метода sign_in
 
     # юзер может создать новую игру
-    it 'creates game' do
+    it "creates game" do
       # сперва накидаем вопросов, из чего собирать новую игру
       generate_questions(15)
 
@@ -52,18 +52,18 @@ RSpec.describe GamesController, type: :controller do
     end
 
     # юзер видит свою игру
-    it '#show game' do
+    it "#show game" do
       get :show, id: game_w_questions.id
       game = assigns(:game) # вытаскиваем из контроллера поле @game
       expect(game.finished?).to be_falsey
       expect(game.user).to eq(user)
 
       expect(response.status).to eq(200) # должен быть ответ HTTP 200
-      expect(response).to render_template('show') # и отрендерить шаблон show
+      expect(response).to render_template("show") # и отрендерить шаблон show
     end
 
     # юзер отвечает на игру корректно - игра продолжается
-    it 'answers correct' do
+    it "answers correct" do
       # передаем параметр params[:letter]
       put :answer, id: game_w_questions.id, letter: game_w_questions.current_game_question.correct_answer_key
       game = assigns(:game)
@@ -75,7 +75,7 @@ RSpec.describe GamesController, type: :controller do
     end
 
     # тест на отработку "помощи зала"
-    it 'uses audience help' do
+    it "uses audience help" do
       # сперва проверяем что в подсказках текущего вопроса пусто
       expect(game_w_questions.current_game_question.help_hash[:audience_help]).not_to be
       expect(game_w_questions.audience_help_used).to be_falsey
@@ -88,8 +88,31 @@ RSpec.describe GamesController, type: :controller do
       expect(game.finished?).to be_falsey
       expect(game.audience_help_used).to be_truthy
       expect(game.current_game_question.help_hash[:audience_help]).to be
-      expect(game.current_game_question.help_hash[:audience_help].keys).to contain_exactly('a', 'b', 'c', 'd')
+      expect(game.current_game_question.help_hash[:audience_help].keys).to contain_exactly("a", "b", "c", "d")
       expect(response).to redirect_to(game_path(game))
+    end
+  end
+
+  describe "#show" do
+    before(:each) do
+      sign_in user
+      get :show, id: alien_game.id
+    end
+
+    context "when user check alien game" do
+      let!(:alien_game) { FactoryBot.create(:game_with_questions) }
+
+      it "response return status not 200" do
+        expect(response.status).not_to eq(200)
+      end
+
+      it "redirect to root_path" do
+        expect(response).to redirect_to(root_path)
+      end
+
+      it "error message will appear in flash" do
+        expect(flash[:alert]).to be
+      end
     end
   end
 end
