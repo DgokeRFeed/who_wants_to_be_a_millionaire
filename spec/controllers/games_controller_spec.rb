@@ -19,6 +19,7 @@ RSpec.describe GamesController, type: :controller do
 
   # группа тестов для незалогиненного юзера (Анонимус)
   context "Anon" do
+    let(:game) { assigns(:game) }
     # из экшена show анона посылаем
     it "kick from #show" do
       # вызываем экшен
@@ -27,6 +28,93 @@ RSpec.describe GamesController, type: :controller do
       expect(response.status).not_to eq(200) # статус не 200 ОК
       expect(response).to redirect_to(new_user_session_path) # devise должен отправить на логин
       expect(flash[:alert]).to be # во flash должен быть прописана ошибка
+    end
+
+    context "when try create new game" do
+      before do
+        generate_questions(15)
+        post :create
+      end
+
+      it "instance variable game is nil" do
+        expect(game).to be_nil
+      end
+
+      it "game doesn't created" do
+        expect { post :create }.to change(Game, :count).by(0)
+      end
+
+      it "return not 200 status" do
+        expect(response.status).not_to eq(200)
+      end
+
+      it "redirect to sign_in page" do
+        expect(response).to redirect_to(new_user_session_path)
+      end
+
+      it "adds alert message in flash" do
+        expect(flash[:alert]).to be
+      end
+    end
+
+    context "when try answer to question" do
+      before {  put :answer, id: game_w_questions.id }
+
+      it "instance variable game is nil" do
+        expect(game).to be_nil
+      end
+
+      it "return not 200 status" do
+        expect(response.status).not_to eq(200)
+      end
+
+      it "redirect to sign_in page" do
+        expect(response).to redirect_to(new_user_session_path)
+      end
+
+      it "adds alert message in flash" do
+        expect(flash[:alert]).to be
+      end
+    end
+
+    context "when try take money" do
+      before {  put :take_money, id: game_w_questions.id }
+
+      it "instance variable game is nil" do
+        expect(game).to be_nil
+      end
+
+      it "return not 200 status" do
+        expect(response.status).not_to eq(200)
+      end
+
+      it "redirect to sign_in page" do
+        expect(response).to redirect_to(new_user_session_path)
+      end
+
+      it "adds alert message in flash" do
+        expect(flash[:alert]).to be
+      end
+    end
+
+    context "when try use hint" do
+      before {  put :help, id: game_w_questions.id }
+
+      it "instance variable game is nil" do
+        expect(game).to be_nil
+      end
+
+      it "return not 200 status" do
+        expect(response.status).not_to eq(200)
+      end
+
+      it "redirect to sign_in page" do
+        expect(response).to redirect_to(new_user_session_path)
+      end
+
+      it "adds alert message in flash" do
+        expect(flash[:alert]).to be
+      end
     end
   end
 
