@@ -162,14 +162,18 @@ RSpec.describe GamesController, type: :controller do
       expect(flash.empty?).to be_truthy # удачный ответ не заполняет flash
     end
 
-    context "answer wrong" do
+    context "answered wrong" do
       before do
         letter = %w[a b c d] - [game_w_questions.current_game_question.correct_answer_key]
         put :answer, id: game_w_questions.id, letter: letter
       end
 
       let(:game) { assigns(:game) }
-      let(:level) { game.current_level }
+      let(:answer_is_correct) { assigns(:answer_is_correct) }
+
+      it "answer is wrong" do
+        expect(answer_is_correct).to be_falsey
+      end
 
       it "game is finished" do
         expect(game.finished?).to be true
@@ -177,10 +181,6 @@ RSpec.describe GamesController, type: :controller do
 
       it "game status is fail" do
         expect(game.status).to eq(:fail)
-      end
-
-      it "game doesn't progress to the next level" do
-        expect(game.current_level).not_to eq(level + 1)
       end
 
       it "redirect to user profile" do
