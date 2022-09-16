@@ -29,7 +29,7 @@ RSpec.describe GameQuestion, type: :model do
       expect(game_question.text).to eq(game_question.question.text)
     end
 
-    it "correct #level delegate"
+    it "correct #level delegate" do
       expect(game_question.level).to eq(game_question.question.level)
     end
 
