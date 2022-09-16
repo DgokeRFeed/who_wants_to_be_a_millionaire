@@ -25,12 +25,15 @@ RSpec.describe GameQuestion, type: :model do
       expect(game_question.answer_correct?("b")).to be_truthy
     end
     
-    it "correct .text and .level delegate" do
+    it "correct #text delegate" do
       expect(game_question.text).to eq(game_question.question.text)
+    end
+
+    it "correct #level delegate"
       expect(game_question.level).to eq(game_question.question.level)
     end
 
-    it "correct .correct_answer_key" do
+    it "correct #correct_answer_key" do
       expect(game_question.correct_answer_key).to eq("b")
     end
   end
