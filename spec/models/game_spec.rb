@@ -59,20 +59,6 @@ RSpec.describe Game, type: :model do
       expect(game_w_questions.status).to eq(:in_progress)
       expect(game_w_questions.finished?).to be_falsey
     end
-    
-    it ".take_money! finished game" do
-      q = game_w_questions.current_game_question
-      game_w_questions.answer_current_question!(q.correct_answer_key)
-
-      game_w_questions.take_money!
-
-      prize = game_w_questions.prize
-      expect(prize).to be > 0
-
-      expect(game_w_questions.status).to eq(:money)
-      expect(game_w_questions.user.balance).to eq(prize)
-      expect(game_w_questions.finished?).to be_truthy
-    end
 
     it "correct .current_game_question" do
       expect(game_w_questions.current_game_question.level).to eq(0)
@@ -80,6 +66,28 @@ RSpec.describe Game, type: :model do
 
     it "correct .previous_level" do
       expect(game_w_questions.previous_level).to eq(-1)
+    end
+
+    context "#take_money!" do
+      before do
+        q = game_w_questions.current_game_question
+        game_w_questions.answer_current_question!(q.correct_answer_key)
+        game_w_questions.take_money!
+      end
+
+      let!(:prize) { game_w_questions.prize }
+
+      it "finishes game" do
+        expect(game_w_questions.finished?).to be true
+      end
+
+      it "finishes game with status money" do
+        expect(game_w_questions.status).to eq(:money)
+      end
+
+      it "assigns current prize" do
+        expect(game_w_questions.user.balance).to eq(prize)
+      end
     end
   end
 
