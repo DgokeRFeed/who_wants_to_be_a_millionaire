@@ -3,38 +3,68 @@
 require "rails_helper"
 
 # Тестовый сценарий для модели игрового вопроса,
-# в идеале весь наш функционал (все методы) должны быть протестированы.
 RSpec.describe GameQuestion, type: :model do
-
-  # задаем локальную переменную game_question, доступную во всех тестах этого сценария
-  # она будет создана на фабрике заново для каждого блока it, где она вызывается
   let(:game_question) { FactoryBot.create(:game_question, a: 2, b: 1, c: 4, d: 3) }
 
   # группа тестов на игровое состояние объекта вопроса
-  context "game status" do
-    # тест на правильную генерацию хэша с вариантами
-    it "correct .variants" do
+
+  describe "#variants" do
+    it "return correct hash" do
       expect(game_question.variants).to eq({"a" => game_question.question.answer2,
                                             "b" => game_question.question.answer1,
                                             "c" => game_question.question.answer4,
                                             "d" => game_question.question.answer3})
     end
+  end
 
-    it "correct .answer_correct?" do
-      # именно под буквой b в тесте мы спрятали указатель на верный ответ
-      expect(game_question.answer_correct?("b")).to be_truthy
+  describe "#answer_correct?" do
+    context "when answer correct" do
+      it "return true" do
+        expect(game_question.answer_correct?("b")).to be true
+      end
     end
-    
-    it "correct #text delegate" do
+  end
+
+  describe "#text" do
+    it "delegates correctly" do
       expect(game_question.text).to eq(game_question.question.text)
     end
+  end
 
-    it "correct #level delegate" do
+  describe "#level" do
+    it "delegates correctly" do
       expect(game_question.level).to eq(game_question.question.level)
     end
+  end
 
-    it "correct #correct_answer_key" do
+  describe "#correct_answer_key" do
+    it "return right answers key" do
       expect(game_question.correct_answer_key).to eq("b")
+    end
+  end
+
+  describe "#help_hash" do
+    let!(:gq) { GameQuestion.find(game_question.id) }
+
+    context "when game question creates" do
+      it "help hash is empty" do
+        expect(gq.help_hash).to eq({})
+      end
+    end
+
+    context "when adds keys in help hash" do
+      before do
+        gq.help_hash[:some_key1] = "blabla1"
+        gq.help_hash[:some_key2] = "blabla2"
+      end
+
+      it "game question saved" do
+        expect(gq.save).to be true
+      end
+
+      it "help hash have keys" do
+        expect(gq.help_hash).to eq({ some_key1: "blabla1", some_key2: "blabla2" })
+      end
     end
   end
 
@@ -46,16 +76,55 @@ RSpec.describe GameQuestion, type: :model do
   # }
   #
 
-  context "user helpers" do
-    it "correct audience_help" do
-      expect(game_question.help_hash).not_to include(:audience_help)
+  describe "#add_audience_help" do
+    let!(:gq) { GameQuestion.find(game_question.id) }
 
-      game_question.add_audience_help
+    context "when game question creates" do
+      it "help hash do not include :audience_help" do
+        expect(gq.help_hash).not_to include(:audience_help)
+      end
+    end
 
-      expect(game_question.help_hash).to include(:audience_help)
+    context "when uses audience help" do
+      before { gq.add_audience_help }
 
-      ah = game_question.help_hash[:audience_help]
-      expect(ah.keys).to contain_exactly("a", "b", "c", "d")
+      let(:ah) { gq.help_hash[:audience_help] }
+
+      it "help hash include :audience_help" do
+        expect(gq.help_hash).to include(:audience_help)
+      end
+
+      it "audience variants is correct" do
+        expect(ah.keys).to contain_exactly("a", "b", "c", "d")
+      end
+    end
+  end
+
+  describe "#add_fifty_fifty" do
+    let!(:gq) { GameQuestion.find(game_question.id) }
+
+    context "when game question creates" do
+      it "help hash do not include :audience_help" do
+        expect(gq.help_hash).not_to include(:fifty_fifty)
+      end
+    end
+
+    context "when uses audience help" do
+      before { gq.add_fifty_fifty }
+
+      let(:ff) { gq.help_hash[:fifty_fifty] }
+
+      it "help hash include :audience_help" do
+        expect(gq.help_hash).to include(:fifty_fifty)
+      end
+
+      it "correct variant still included" do
+        expect(ff).to include('b')
+      end
+
+      it "remained two variants" do
+        expect(ff.size).to eq 2
+      end
     end
   end
 end
