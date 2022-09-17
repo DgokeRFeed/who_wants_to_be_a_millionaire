@@ -104,17 +104,17 @@ RSpec.describe GameQuestion, type: :model do
     let!(:gq) { GameQuestion.find(game_question.id) }
 
     context "when game question creates" do
-      it "help hash do not include :audience_help" do
+      it "help hash do not include fifty_fifty" do
         expect(gq.help_hash).not_to include(:fifty_fifty)
       end
     end
 
-    context "when uses audience help" do
+    context "when uses fifty_fifty" do
       before { gq.add_fifty_fifty }
 
       let(:ff) { gq.help_hash[:fifty_fifty] }
 
-      it "help hash include :audience_help" do
+      it "help hash include fifty_fifty" do
         expect(gq.help_hash).to include(:fifty_fifty)
       end
 
@@ -127,4 +127,5 @@ RSpec.describe GameQuestion, type: :model do
       end
     end
   end
+
 end
