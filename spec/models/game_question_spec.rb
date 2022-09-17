@@ -128,4 +128,31 @@ RSpec.describe GameQuestion, type: :model do
     end
   end
 
+  describe "#add_friend_call" do
+    let!(:gq) { GameQuestion.find(game_question.id) }
+
+    context "when game question creates" do
+      it "help hash do not include friend_call" do
+        expect(gq.help_hash).not_to include(:friend_call)
+      end
+    end
+
+    context "when uses friend_call" do
+      before { gq.add_friend_call }
+
+      let(:fc) { gq.help_hash[:friend_call] }
+
+      it "help hash include fifty_fifty" do
+        expect(gq.help_hash).to include(:friend_call)
+      end
+
+      it "return string" do
+        expect(fc).to be_instance_of String
+      end
+
+      it "one of variants included" do
+        expect(fc).to match /[A-D]/
+      end
+    end
+  end
 end
