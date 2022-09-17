@@ -324,6 +324,14 @@ RSpec.describe GamesController, type: :controller do
         it "doesn't use audience help" do
           expect(game_w_questions.current_game_question.help_hash[:audience_help]).not_to be
         end
+
+        it "doesn't use fifty-fifty" do
+          expect(game_w_questions.current_game_question.help_hash[:fifty_fifty]).not_to be
+        end
+
+        it "doesn't use friend call" do
+          expect(game_w_questions.current_game_question.help_hash[:friend_call]).not_to be
+        end
       end
 
       context "use audience help" do
@@ -341,8 +349,44 @@ RSpec.describe GamesController, type: :controller do
           expect(game.current_game_question.help_hash[:audience_help]).to be
         end
 
-        it "variants is right" do
-          expect(game.current_game_question.help_hash[:audience_help].keys).to contain_exactly("a", "b", "c", "d")
+        it "redirect to game" do
+          expect(response).to redirect_to(game_path(game))
+        end
+      end
+
+      context "use fifty-fifty" do
+        before { put :help, id: game_w_questions.id, help_type: :fifty_fifty }
+
+        it "continues game" do
+          expect(game.finished?).to be false
+        end
+
+        it "uses hint" do
+          expect(game.fifty_fifty_used).to be true
+        end
+
+        it "hint exist in hash" do
+          expect(game.current_game_question.help_hash[:fifty_fifty]).to be
+        end
+
+        it "redirect to game" do
+          expect(response).to redirect_to(game_path(game))
+        end
+      end
+
+      context "use friend call" do
+        before { put :help, id: game_w_questions.id, help_type: :friend_call }
+
+        it "continues game" do
+          expect(game.finished?).to be false
+        end
+
+        it "uses hint" do
+          expect(game.friend_call_used).to be true
+        end
+
+        it "hint exist in hash" do
+          expect(game.current_game_question.help_hash[:friend_call]).to be
         end
 
         it "redirect to game" do
