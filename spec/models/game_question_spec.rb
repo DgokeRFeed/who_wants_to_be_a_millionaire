@@ -44,26 +44,24 @@ RSpec.describe GameQuestion, type: :model do
   end
 
   describe "#help_hash" do
-    let!(:gq) { GameQuestion.find(game_question.id) }
-
     context "when game question creates" do
       it "help hash is empty" do
-        expect(gq.help_hash).to eq({})
+        expect(game_question.help_hash).to eq({})
       end
     end
 
     context "when adds keys in help hash" do
       before do
-        gq.help_hash[:some_key1] = "blabla1"
-        gq.help_hash[:some_key2] = "blabla2"
+        game_question.help_hash[:some_key1] = "blabla1"
+        game_question.help_hash[:some_key2] = "blabla2"
       end
 
       it "game question saved" do
-        expect(gq.save).to be true
+        expect(game_question.save).to be true
       end
 
       it "help hash have keys" do
-        expect(gq.help_hash).to eq({ some_key1: "blabla1", some_key2: "blabla2" })
+        expect(game_question.help_hash).to eq({ some_key1: "blabla1", some_key2: "blabla2" })
       end
     end
   end
@@ -77,21 +75,19 @@ RSpec.describe GameQuestion, type: :model do
   #
 
   describe "#add_audience_help" do
-    let!(:gq) { GameQuestion.find(game_question.id) }
-
     context "when game question creates" do
       it "help hash do not include :audience_help" do
-        expect(gq.help_hash).not_to include(:audience_help)
+        expect(game_question.help_hash).not_to include(:audience_help)
       end
     end
 
     context "when uses audience help" do
-      before { gq.add_audience_help }
+      before { game_question.add_audience_help }
 
-      let(:ah) { gq.help_hash[:audience_help] }
+      let(:ah) { game_question.help_hash[:audience_help] }
 
       it "help hash include :audience_help" do
-        expect(gq.help_hash).to include(:audience_help)
+        expect(game_question.help_hash).to include(:audience_help)
       end
 
       it "audience variants is correct" do
@@ -101,21 +97,19 @@ RSpec.describe GameQuestion, type: :model do
   end
 
   describe "#add_fifty_fifty" do
-    let!(:gq) { GameQuestion.find(game_question.id) }
-
     context "when game question creates" do
       it "help hash do not include fifty_fifty" do
-        expect(gq.help_hash).not_to include(:fifty_fifty)
+        expect(game_question.help_hash).not_to include(:fifty_fifty)
       end
     end
 
     context "when uses fifty_fifty" do
-      before { gq.add_fifty_fifty }
+      before { game_question.add_fifty_fifty }
 
-      let(:ff) { gq.help_hash[:fifty_fifty] }
+      let(:ff) { game_question.help_hash[:fifty_fifty] }
 
       it "help hash include fifty_fifty" do
-        expect(gq.help_hash).to include(:fifty_fifty)
+        expect(game_question.help_hash).to include(:fifty_fifty)
       end
 
       it "correct variant still included" do
@@ -129,21 +123,19 @@ RSpec.describe GameQuestion, type: :model do
   end
 
   describe "#add_friend_call" do
-    let!(:gq) { GameQuestion.find(game_question.id) }
-
     context "when game question creates" do
       it "help hash do not include friend_call" do
-        expect(gq.help_hash).not_to include(:friend_call)
+        expect(game_question.help_hash).not_to include(:friend_call)
       end
     end
 
     context "when uses friend_call" do
-      before { gq.add_friend_call }
+      before { game_question.add_friend_call }
 
-      let(:fc) { gq.help_hash[:friend_call] }
+      let(:fc) { game_question.help_hash[:friend_call] }
 
       it "help hash include fifty_fifty" do
-        expect(gq.help_hash).to include(:friend_call)
+        expect(game_question.help_hash).to include(:friend_call)
       end
 
       it "return string" do
