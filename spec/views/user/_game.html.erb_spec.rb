@@ -32,7 +32,7 @@ RSpec.describe 'users/_game', type: :view do
   end
 
   # Проверяем, что фрагмент выводит текущий уровень
-  it 'renders game current quesion' do
+  it 'renders game current question' do
     expect(rendered).to match '10'
   end
 
